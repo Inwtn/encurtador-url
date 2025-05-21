@@ -1,4 +1,4 @@
-package com.exemplo.encurtadorurl;
+package com.estudos.encurtadorurl;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
