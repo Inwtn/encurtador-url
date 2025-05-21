@@ -1,9 +1,15 @@
+package com.estudos.encurtadorurl.model;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
+
 @Document(collection = "short_urls")
 public class ShortUrl {
 
     @Id
     private String id;
-
     private String originalUrl;
     private String shortCode;
     private LocalDateTime expiration;
@@ -24,11 +30,11 @@ public class ShortUrl {
         return originalUrl;
     }
 
-    public void setOriginalUrl (String originalUrl) {
+    public void setOriginalUrl(String originalUrl) {
         this.originalUrl = originalUrl;
     }
 
-    public String getShortCode () {
+    public String getShortCode() {
         return shortCode;
     }
 
@@ -36,7 +42,7 @@ public class ShortUrl {
         this.shortCode = shortCode;
     }
 
-    public LocalDateTime getExpiration () {
+    public LocalDateTime getExpiration() {
         return expiration;
     }
 
