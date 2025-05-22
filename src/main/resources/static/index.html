@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Encurtador de URL</title>
+    <style>
+      /* ...mesmo CSS do exemplo anterior... */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      body {
+        background: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+      }
+      .container {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+      h1 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+      input[type="url"],
+      input[type="number"] {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+        margin-bottom: 15px;
+        transition: border-color 0.3s ease;
+      }
+      input[type="url"]:focus,
+      input[type="number"]:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 5px #3b82f6aa;
+      }
+      button {
+        background: #3b82f6;
+        border: none;
+        color: white;
+        padding: 12px 0;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
+      }
+      button:hover {
+        background: #2563eb;
+      }
+      .result {
+        margin-top: 20px;
+        padding: 15px;
+        background: #e0f2fe;
+        border-radius: 6px;
+        word-break: break-word;
+        color: #0369a1;
+        font-weight: 600;
+      }
+      .error {
+        margin-top: 20px;
+        padding: 15px;
+        background: #fee2e2;
+        border-radius: 6px;
+        color: #b91c1c;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Encurtador de URL</h1>
+      <input id="urlInput" type="url" placeholder="Cole sua URL aqui" />
+      <input
+        id="expirationInput"
+        type="number"
+        min="1"
+        max="1440"
+        value="60"
+        placeholder="Expiração (minutos)"
+      />
+      <button id="shortenBtn">Encurtar URL</button>
+      <div id="output"></div>
+    </div>
+
+    <script>
+      const shortenBtn = document.getElementById("shortenBtn");
+      const urlInput = document.getElementById("urlInput");
+      const expirationInput = document.getElementById("expirationInput");
+      const output = document.getElementById("output");
+
+      shortenBtn.addEventListener("click", async () => {
+        const originalUrl = urlInput.value.trim();
+        const expiration = expirationInput.value.trim();
+
+        if (!originalUrl) {
+          output.innerHTML =
+            '<div class="error">Por favor, insira uma URL válida.</div>';
+          return;
+        }
+
+        if (
+          !expiration ||
+          isNaN(expiration) ||
+          expiration < 1 ||
+          expiration > 1440
+        ) {
+          output.innerHTML =
+            '<div class="error">Informe um tempo de expiração entre 1 e 1440 minutos.</div>';
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/urls", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ originalUrl, expiration }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Erro ao encurtar URL");
+          }
+
+          const data = await response.json();
+          const shortUrl = `${window.location.origin}/api/urls/${data.shortCode}`;
+          output.innerHTML = `<div class="result">URL encurtada: <a href="${shortUrl}" target="_blank">${shortUrl}</a></div>`;
+        } catch (err) {
+          output.innerHTML = `<div class="error">${err.message}</div>`;
+        }
+      });
+    </script>
+  </body>
+</html>
